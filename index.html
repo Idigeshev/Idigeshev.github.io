@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вячеслав — Аналитика данных и BI</title>
+    <meta name="description"
+        content="Помогаю бизнесу выстроить работу с данными: дашборды, автоматизация отчётности, аналитика под задачи бизнеса. Опыт с 2022 года.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0e1117;
+            --bg-card: #161b22;
+            --border: #21262d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --text-bright: #f0f6fc;
+            --accent: #58a6ff;
+            --accent-muted: rgba(88, 166, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        /* ── Layout ── */
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* ── Left panel ── */
+        .left {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 380px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 80px 60px 80px 0;
+        }
+
+        .left-top h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .left-top .title {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .left-top .intro {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.9;
+            max-width: 280px;
+        }
+
+        /* ── Navigation ── */
+        nav {
+            margin-top: 48px;
+        }
+
+        nav a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 8px 0;
+            transition: color 0.2s;
+        }
+
+        nav a::before {
+            content: '';
+            display: block;
+            height: 1px;
+            width: 32px;
+            background: var(--text-muted);
+            transition: width 0.25s ease, background 0.2s;
+            flex-shrink: 0;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: var(--text-bright);
+        }
+
+        nav a:hover::before,
+        nav a.active::before {
+            width: 64px;
+            background: var(--text-bright);
+        }
+
+        /* ── Social links ── */
+        .socials {
+            display: flex;
+            gap: 20px;
+        }
+
+        .socials a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .socials a:hover {
+            color: var(--text-bright);
+        }
+
+        /* ── Right panel ── */
+        .right {
+            flex: 1;
+            padding: 80px 0 80px 60px;
+            border-left: 1px solid var(--border);
+        }
+
+        /* ── Sections ── */
+        .section {
+            margin-bottom: 96px;
+        }
+
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        /* ── About ── */
+        .about-text p {
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 1.9;
+            margin-bottom: 16px;
+        }
+
+        .about-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .about-text strong {
+            color: var(--text-bright);
+            font-weight: 500;
+        }
+
+        /* ── Services ── */
+        .service-item {
+            display: flex;
+            gap: 24px;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 2px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .service-item:hover {
+            background: var(--bg-card);
+            border-color: var(--border);
+        }
+
+        .service-item:hover .service-title {
+            color: var(--accent);
+        }
+
+        .service-number {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding-top: 4px;
+            min-width: 24px;
+            flex-shrink: 0;
+        }
+
+        .service-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+            transition: color 0.2s;
+        }
+
+        .service-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* ── Stack ── */
+        .stack-group {
+            margin-bottom: 28px;
+        }
+
+        .stack-group-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .stack-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill {
+            background: rgba(88, 166, 255, 0.08);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(88, 166, 255, 0.18);
+        }
+
+        /* ── Cases ── */
+        .case-item {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 24px;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 2px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .case-item:hover {
+            background: var(--bg-card);
+            border-color: var(--border);
+        }
+
+        .case-item:hover .case-title {
+            color: var(--accent);
+        }
+
+        .case-preview {
+            width: 120px;
+            height: 72px;
+            border-radius: 6px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .case-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .case-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 6px;
+            transition: color 0.2s;
+        }
+
+        .case-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.75;
+            margin-bottom: 10px;
+        }
+
+        .case-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .case-tag {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--accent);
+            background: rgba(88, 166, 255, 0.08);
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .cases-placeholder {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ── Contact ── */
+        .contact-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.9;
+            margin-bottom: 32px;
+            max-width: 540px;
+        }
+
+        .contact-text strong {
+            color: var(--text-bright);
+            font-weight: 500;
+        }
+
+        .contact-links {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 16px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contact-link-type {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            min-width: 72px;
+        }
+
+        .contact-link-value {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .contact-link:hover .contact-link-value {
+            text-decoration: underline;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            padding: 24px 0 0;
+            border-top: 1px solid var(--border);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 960px) {
+            .layout {
+                flex-direction: column;
+                padding: 0 24px;
+            }
+
+            .left {
+                position: relative;
+                height: auto;
+                width: 100%;
+                padding: 60px 0 40px;
+            }
+
+            .left-top .intro {
+                max-width: 100%;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .right {
+                padding: 48px 0 60px;
+                border-left: none;
+                border-top: 1px solid var(--border);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .case-item {
+                grid-template-columns: 1fr;
+            }
+
+            .case-preview {
+                width: 100%;
+                height: 160px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::selection {
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- ── Left Panel ── -->
+        <aside class="left">
+            <div class="left-top">
+                <h1>Вячеслав</h1>
+                <div class="title">Аналитик данных · BI инженер</div>
+                <p class="intro">
+                    Помогаю бизнесу работать с данными —<br>
+                    без лишней технической боли.
+                </p>
+
+                <nav>
+                    <a href="#about">О&nbsp;себе</a>
+                    <a href="#services">Услуги</a>
+                    <a href="#stack">Технологии</a>
+                    <a href="#cases">Кейсы</a>
+                    <a href="#contact">Контакт</a>
+                </nav>
+            </div>
+
+            <div class="socials">
+                <!-- Замените на свои ссылки -->
+                <a href="https://t.me/yourusername" target="_blank">Telegram</a>
+                <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
+                <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+            </div>
+        </aside>
+
+        <!-- ── Right Panel ── -->
+        <main class="right">
+
+            <!-- О себе -->
+            <section class="section" id="about">
+                <div class="section-label">О себе</div>
+                <div class="about-text">
+                    <p>
+                        Занимаюсь аналитикой данных с 2022 года. Начинал с построения дашбордов
+                        и отчётности, с 2024 года добавил инженерную часть — автоматизацию сбора
+                        и обработки данных.
+                    </p>
+                    <p>
+                        По основной работе — <strong>ведущий аналитик</strong>: управляю ETL-пайплайнами,
+                        разрабатываю дашборды для операционного и управленческого контроля.
+                        Периодически занимаюсь исследовательскими задачами — A/B тесты, прогнозирование,
+                        глубокий анализ метрик.
+                    </p>
+                    <p>
+                        Параллельно берусь за внешние проекты и консультации.
+                        Помогаю небольшим командам и бизнесам разобраться с данными:
+                        настроить сбор, выстроить аналитику, сделать понятные отчёты.
+                        Работаю на разовых задачах, частичной занятости или консультациях.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Услуги -->
+            <section class="section" id="services">
+                <div class="section-label">Услуги</div>
+
+                <div class="service-item">
+                    <div class="service-number">01</div>
+                    <div>
+                        <div class="service-title">Дашборды и отчётность</div>
+                        <div class="service-desc">
+                            Разрабатываю интерактивные дашборды и регулярные отчёты в Power BI и Datalens.
+                            Отчёты, которые реально читают — без перегруза цифрами, с нужными метриками
+                            на нужном уровне детализации.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-number">02</div>
+                    <div>
+                        <div class="service-title">Автоматизация обработки данных</div>
+                        <div class="service-desc">
+                            Настраиваю ETL/ELT-пайплайны: данные из разных источников автоматически
+                            собираются, обновляются и попадают в нужный вид.
+                            Вы перестаёте собирать отчёты вручную.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-number">03</div>
+                    <div>
+                        <div class="service-title">Хранилище данных под бизнес</div>
+                        <div class="service-desc">
+                            Проектирую структуру хранения данных — так, чтобы любой отчёт считался быстро,
+                            а добавление нового источника не ломало всё остальное.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-number">04</div>
+                    <div>
+                        <div class="service-title">Аналитика под задачу</div>
+                        <div class="service-desc">
+                            Ad-hoc разборы, A/B тестирование, прогнозирование спроса, анализ когорт
+                            и воронок. Когда нужно не просто цифры, а понять, что за ними стоит
+                            и что с этим делать.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-item">
+                    <div class="service-number">05</div>
+                    <div>
+                        <div class="service-title">Консультация и аудит</div>
+                        <div class="service-desc">
+                            Разберём, что сейчас происходит с вашими данными, где точки роста
+                            и что стоит сделать в первую очередь. Помогаю избежать типичных ошибок
+                            при выстраивании аналитики с нуля.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Технологии -->
+            <section class="section" id="stack">
+                <div class="section-label">Технологии</div>
+
+                <div class="stack-group">
+                    <div class="stack-group-title">Базы данных</div>
+                    <div class="stack-pills">
+                        <span class="pill">PostgreSQL</span>
+                        <span class="pill">MSSQL</span>
+                        <span class="pill">ClickHouse</span>
+                    </div>
+                </div>
+
+                <div class="stack-group">
+                    <div class="stack-group-title">Обработка и трансформация</div>
+                    <div class="stack-pills">
+                        <span class="pill">SQL</span>
+                        <span class="pill">Python</span>
+                        <span class="pill">dbt</span>
+                        <span class="pill">Apache Airflow</span>
+                    </div>
+                </div>
+
+                <div class="stack-group">
+                    <div class="stack-group-title">Визуализация</div>
+                    <div class="stack-pills">
+                        <span class="pill">Power BI</span>
+                        <span class="pill">Datalens</span>
+                        <span class="pill">Apache Superset</span>
+                    </div>
+                </div>
+
+                <div class="stack-group">
+                    <div class="stack-group-title">Источники данных</div>
+                    <div class="stack-pills">
+                        <span class="pill">REST API</span>
+                        <span class="pill">Excel / CSV</span>
+                        <span class="pill">JSON</span>
+                    </div>
+                </div>
+
+                <div class="stack-group">
+                    <div class="stack-group-title">Инструменты</div>
+                    <div class="stack-pills">
+                        <span class="pill">Git</span>
+                        <span class="pill">GitHub Copilot</span>
+                        <span class="pill">VS Code</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Кейсы -->
+            <section class="section" id="cases">
+                <div class="section-label">Кейсы</div>
+
+                <!--
+                    Шаблон кейса — раскомментируйте и заполните:
+
+                    <div class="case-item">
+                        <div class="case-preview">
+                            <img src="images/case-1.png" alt="Скриншот">
+                        </div>
+                        <div>
+                            <div class="case-title">Название проекта</div>
+                            <div class="case-desc">
+                                Что за задача, что сделали, какой результат получил бизнес.
+                            </div>
+                            <div class="case-tags">
+                                <span class="case-tag">ETL</span>
+                                <span class="case-tag">Power BI</span>
+                            </div>
+                        </div>
+                    </div>
+                -->
+
+                <div class="cases-placeholder">
+                    Готовлю описания проектов. Скоро здесь появятся реальные кейсы.
+                </div>
+            </section>
+
+            <!-- Контакт -->
+            <section class="section" id="contact">
+                <div class="section-label">Контакт</div>
+
+                <p class="contact-text">
+                    Если у вас есть задача с данными — напишите, расскажу, чем могу помочь.
+                    Работаю <strong>на проекте</strong>, <strong>частичной занятости</strong>
+                    или провожу разовые <strong>консультации</strong>.
+                </p>
+
+                <div class="contact-links">
+                    <!-- Замените на свои контакты -->
+                    <a href="https://t.me/yourusername" class="contact-link" target="_blank">
+                        <span class="contact-link-type">Telegram</span>
+                        <span class="contact-link-value">@yourusername</span>
+                    </a>
+                    <a href="mailto:your@email.com" class="contact-link">
+                        <span class="contact-link-type">Email</span>
+                        <span class="contact-link-value">your@email.com</span>
+                    </a>
+                    <a href="https://linkedin.com/in/yourprofile" class="contact-link" target="_blank">
+                        <span class="contact-link-type">LinkedIn</span>
+                        <span class="contact-link-value">linkedin.com/in/yourprofile</span>
+                    </a>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <p>&copy; 2026 Вячеслав</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        // Highlight active nav link on scroll
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('nav a');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { rootMargin: '-40% 0px -55% 0px' });
+
+        sections.forEach(s => observer.observe(s));
+    </script>
+</body>
+
+</html>
