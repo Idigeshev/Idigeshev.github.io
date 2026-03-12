@@ -631,30 +631,7 @@
             <!-- Кейсы -->
             <section class="section" id="cases">
                 <div class="section-label">Кейсы</div>
-
-                <!--
-                    Шаблон кейса — раскомментируйте и заполните:
-
-                    <div class="case-item">
-                        <div class="case-preview">
-                            <img src="images/case-1.png" alt="Скриншот">
-                        </div>
-                        <div>
-                            <div class="case-title">Название проекта</div>
-                            <div class="case-desc">
-                                Что за задача, что сделали, какой результат получил бизнес.
-                            </div>
-                            <div class="case-tags">
-                                <span class="case-tag">ETL</span>
-                                <span class="case-tag">Power BI</span>
-                            </div>
-                        </div>
-                    </div>
-                -->
-
-                <div class="cases-placeholder">
-                    Готовлю описания проектов. Скоро здесь появятся реальные кейсы.
-                </div>
+                <div id="cases-list"></div>
             </section>
 
             <!-- Контакт -->
@@ -697,6 +674,36 @@
             document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
             document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
         });
+
+        // Render cases from cases.json
+        fetch('cases.json')
+            .then(r => r.json())
+            .then(cases => {
+                const list = document.getElementById('cases-list');
+                if (!cases.length) {
+                    list.innerHTML = '<div class="cases-placeholder">Готовлю описания проектов. Скоро здесь появятся реальные кейсы.</div>';
+                    return;
+                }
+                list.innerHTML = cases.map(c => `
+                    <a href="${c.url}" class="case-item" style="text-decoration:none;">
+                        <div class="case-preview">
+                            <img src="${c.cover}" alt="${c.title}"
+                                onerror="this.parentElement.innerHTML='<div style=&quot;width:100%;height:100%;display:flex;align-items:center;justify-content:center;&quot;><svg width=&quot;28&quot; height=&quot;28&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;%238b949e&quot; stroke-width=&quot;1.5&quot;><rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;2&quot;/><circle cx=&quot;8.5&quot; cy=&quot;8.5&quot; r=&quot;1.5&quot;/><polyline points=&quot;21 15 16 10 5 21&quot;/></svg></div>'">
+                        </div>
+                        <div>
+                            <div class="case-title">${c.title}</div>
+                            <div class="case-desc">${c.short}</div>
+                            <div class="case-tags">
+                                ${c.tags.map(t => `<span class="case-tag">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                    </a>
+                `).join('');
+            })
+            .catch(() => {
+                document.getElementById('cases-list').innerHTML =
+                    '<div class="cases-placeholder">Готовлю описания проектов. Скоро здесь появятся реальные кейсы.</div>';
+            });
 
         // Highlight active nav link on scroll
         const sections = document.querySelectorAll('.section');

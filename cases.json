@@ -1,0 +1,15 @@
+[
+    {
+        "id": "plan-fact",
+        "title": "Дашборд план-факт",
+        "short": "Автоматизация сбора данных из 3 источников и ежедневный план-фактный анализ вместо ручной еженедельной сборки",
+        "tags": [
+            "Power BI",
+            "Python",
+            "MSSQL",
+            "ETL"
+        ],
+        "cover": "cases/plan-fact/images/cover.svg",
+        "url": "cases/plan-fact/"
+    }
+]

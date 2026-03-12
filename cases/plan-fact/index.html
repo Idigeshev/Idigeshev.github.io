@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дашборд план-факт — Вячеслав</title>
+    <meta name="description"
+        content="Автоматизация сбора данных из 3 источников и ежедневный план-фактный анализ в Power BI">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0e1117;
+            --bg-card: #161b22;
+            --border: #21262d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --text-bright: #f0f6fc;
+            --accent: #58a6ff;
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: radial-gradient(560px circle at var(--mouse-x) var(--mouse-y),
+                    rgba(88, 166, 255, 0.10),
+                    transparent 70%);
+        }
+
+        .page {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 64px 40px 120px;
+        }
+
+        /* ── Back ── */
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            margin-bottom: 56px;
+            transition: color 0.2s;
+        }
+
+        .back:hover {
+            color: var(--text-bright);
+        }
+
+        .back svg {
+            transition: transform 0.2s;
+        }
+
+        .back:hover svg {
+            transform: translateX(-3px);
+        }
+
+        /* ── Header ── */
+        .case-header {
+            margin-bottom: 56px;
+        }
+
+        .case-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            letter-spacing: -0.5px;
+            margin-bottom: 16px;
+        }
+
+        .case-header .lead {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.9;
+            max-width: 640px;
+            margin-bottom: 24px;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: rgba(88, 166, 255, 0.08);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(88, 166, 255, 0.18);
+        }
+
+        /* ── Links ── */
+        .case-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .case-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .case-link.primary {
+            background: var(--accent);
+            color: #0e1117;
+        }
+
+        .case-link.primary:hover {
+            background: #79b8ff;
+        }
+
+        .case-link.secondary {
+            background: var(--bg-card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .case-link.secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-bright);
+        }
+
+        /* ── Section ── */
+        .section {
+            margin-bottom: 64px;
+        }
+
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        /* ── Before / After ── */
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .ba-col {
+            background: var(--bg-card);
+            padding: 28px 28px 32px;
+        }
+
+        .ba-col:first-child {
+            border-right: 2px solid var(--bg);
+        }
+
+        .ba-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ba-label.before {
+            color: #f0883e;
+        }
+
+        .ba-label.after {
+            color: #3fb950;
+        }
+
+        .ba-label .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .before .dot {
+            background: #f0883e;
+        }
+
+        .after .dot {
+            background: #3fb950;
+        }
+
+        .ba-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ba-list li {
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.6;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .ba-list li::before {
+            content: '–';
+            position: absolute;
+            left: 0;
+            color: var(--text-muted);
+        }
+
+        /* ── Architecture ── */
+        .arch-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 32px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .arch-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .arch-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .arch-block {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 16px;
+            color: var(--text-bright);
+            font-size: 0.82rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .arch-block.source {
+            border-color: #f0883e44;
+            color: #f0883e;
+        }
+
+        .arch-block.process {
+            border-color: rgba(88, 166, 255, 0.3);
+            color: var(--accent);
+        }
+
+        .arch-block.storage {
+            border-color: #3fb95044;
+            color: #3fb950;
+        }
+
+        .arch-block.viz {
+            border-color: #d2a8ff44;
+            color: #d2a8ff;
+        }
+
+        .arch-arrow {
+            color: var(--text-muted);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .arch-comment {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── Gallery ── */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .gallery-item {
+            cursor: zoom-in;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--accent);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .gallery-placeholder svg {
+            opacity: 0.4;
+        }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 12, 18, 0.92);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            backdrop-filter: blur(4px);
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 88vh;
+            border-radius: 8px;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .lightbox-close {
+            position: fixed;
+            top: 24px;
+            right: 32px;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .lightbox-close:hover {
+            color: var(--text-bright);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .page {
+                padding: 40px 24px 80px;
+            }
+
+            .case-header h1 {
+                font-size: 1.7rem;
+            }
+
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+
+            .ba-col:first-child {
+                border-right: none;
+                border-bottom: 2px solid var(--bg);
+            }
+
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::selection {
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+
+        <a href="../../" class="back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Вячеслав — Аналитика данных
+        </a>
+
+        <!-- Заголовок -->
+        <header class="case-header">
+            <h1>Дашборд план-факт</h1>
+            <p class="lead">
+                Заменили ручную еженедельную сборку данных из трёх источников на автоматический
+                Python-скрипт и ежедневный обновляемый дашборд в Power BI.
+            </p>
+
+            <div class="tag-list">
+                <span class="tag">Power BI</span>
+                <span class="tag">Python</span>
+                <span class="tag">MSSQL</span>
+                <span class="tag">ETL</span>
+            </div>
+
+            <div class="case-links">
+                <!-- Раскомментируйте, когда появятся ссылки:
+                <a href="https://app.powerbi.com/..." class="case-link primary" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Открыть демо
+                </a>
+                <a href="https://github.com/Idigeshev/..." class="case-link secondary" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0112 6.8c.85.004 1.71.115 2.51.337 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z"/></svg>
+                    Код на GitHub
+                </a>
+                -->
+                <span style="font-size:0.82rem; color:var(--text-muted); padding: 10px 0;">
+                    Ссылки появятся после публикации демо-версии
+                </span>
+            </div>
+        </header>
+
+        <!-- Было / Стало -->
+        <div class="section">
+            <div class="section-label">Было → Стало</div>
+            <div class="before-after">
+                <div class="ba-col">
+                    <div class="ba-label before"><span class="dot"></span>Было</div>
+                    <ul class="ba-list">
+                        <li>Данные собирались вручную из 3 источников раз в неделю</li>
+                        <li>На сбор уходило несколько часов</li>
+                        <li>Отчёт обновлялся еженедельно</li>
+                        <li>Высокий риск ошибок при ручном переносе данных</li>
+                    </ul>
+                </div>
+                <div class="ba-col">
+                    <div class="ba-label after"><span class="dot"></span>Стало</div>
+                    <ul class="ba-list">
+                        <li>Python-скрипт собирает данные автоматически за 10 минут</li>
+                        <li>Запускается ежедневно по расписанию</li>
+                        <li>Дашборд обновляется каждый день без участия человека</li>
+                        <li>Исключён ручной перенос — ошибки устранены</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Архитектура -->
+        <div class="section">
+            <div class="section-label">Архитектура решения</div>
+            <div class="arch-diagram">
+
+                <div class="arch-row">
+                    <div class="arch-block source">Источник 1</div>
+                    <div class="arch-block source">Источник 2</div>
+                    <div class="arch-block source">Источник 3</div>
+                </div>
+                <div class="arch-row">
+                    <div class="arch-arrow">↓</div>
+                    <span style="font-size:0.78rem; color:var(--text-muted)">REST API / Excel / CSV</span>
+                </div>
+                <div class="arch-row">
+                    <div class="arch-block process">Python ETL-скрипт</div>
+                    <div class="arch-arrow">→</div>
+                    <span style="font-size:0.78rem; color:var(--text-muted)">трансформация «на лету»</span>
+                </div>
+                <div class="arch-row">
+                    <div class="arch-arrow">↓</div>
+                </div>
+                <div class="arch-row">
+                    <div class="arch-block storage">MSSQL</div>
+                    <div class="arch-arrow">→</div>
+                    <div class="arch-block viz">Power BI</div>
+                </div>
+
+                <div class="arch-comment">
+                    Расписание: скрипт запускается ежедневно через Task Scheduler.
+                    Power BI подключён к MSSQL напрямую — обновление дашборда по расписанию в Power BI Service.
+                </div>
+            </div>
+        </div>
+
+        <!-- Галерея -->
+        <div class="section">
+            <div class="section-label">Скриншоты</div>
+            <div class="gallery" id="gallery">
+
+                <!-- Замените src на реальные пути к скриншотам -->
+                <div class="gallery-item" data-src="images/screen-1.png">
+                    <div class="gallery-placeholder">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span>Главная страница дашборда</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-src="images/screen-2.png">
+                    <div class="gallery-placeholder">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span>Детализация по периодам</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-src="images/screen-3.png">
+                    <div class="gallery-placeholder">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span>Структура ETL-скрипта</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item" data-src="images/screen-4.png">
+                    <div class="gallery-placeholder">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span>Модель данных</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" id="lightbox-close">✕</span>
+        <img id="lightbox-img" src="" alt="">
+    </div>
+
+    <script>
+        // Spotlight
+        document.addEventListener('mousemove', (e) => {
+            document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+            document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+        });
+
+        // Lightbox
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+
+        document.querySelectorAll('.gallery-item[data-src]').forEach(item => {
+            item.addEventListener('click', () => {
+                const src = item.dataset.src;
+                const img = item.querySelector('img');
+                // Если есть реальная картинка — открываем лайтбокс
+                if (img) {
+                    lbImg.src = img.src;
+                    lightbox.classList.add('open');
+                }
+            });
+        });
+
+        lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+        document.getElementById('lightbox-close').addEventListener('click', (e) => {
+            e.stopPropagation();
+            lightbox.classList.remove('open');
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') lightbox.classList.remove('open');
+        });
+    </script>
+</body>
+
+</html>
