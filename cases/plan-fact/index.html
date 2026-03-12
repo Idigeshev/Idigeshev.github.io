@@ -419,6 +419,51 @@
             color: var(--text-bright);
         }
 
+        .lightbox-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-muted);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            z-index: 10001;
+            user-select: none;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-bright);
+        }
+
+        .lightbox-prev {
+            left: 20px;
+        }
+
+        .lightbox-next {
+            right: 20px;
+        }
+
+        .lightbox-counter {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            background: rgba(10, 12, 18, 0.7);
+            padding: 4px 14px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 640px) {
             .page {
@@ -605,7 +650,20 @@
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
         <span class="lightbox-close" id="lightbox-close">✕</span>
+        <span class="lightbox-nav lightbox-prev" id="lightbox-prev">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+        </span>
+        <span class="lightbox-nav lightbox-next" id="lightbox-next">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </span>
         <img id="lightbox-img" src="" alt="">
+        <span class="lightbox-counter" id="lightbox-counter"></span>
     </div>
 
     <script>
@@ -618,26 +676,50 @@
         // Lightbox
         const lightbox = document.getElementById('lightbox');
         const lbImg = document.getElementById('lightbox-img');
+        const lbCounter = document.getElementById('lightbox-counter');
 
-        document.querySelectorAll('.gallery-item[data-src]').forEach(item => {
-            item.addEventListener('click', () => {
-                const src = item.dataset.src;
-                const img = item.querySelector('img');
-                // Если есть реальная картинка — открываем лайтбокс
-                if (img) {
-                    lbImg.src = img.src;
-                    lightbox.classList.add('open');
-                }
-            });
+        const galleryItems = [...document.querySelectorAll('.gallery-item[data-src]')]
+            .filter(item => item.querySelector('img'));
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            const img = galleryItems[currentIndex].querySelector('img');
+            lbImg.src = img.src;
+            lbCounter.textContent = `${currentIndex + 1} / ${galleryItems.length}`;
+            const hasPrev = currentIndex > 0;
+            const hasNext = currentIndex < galleryItems.length - 1;
+            document.getElementById('lightbox-prev').style.display = hasPrev ? 'flex' : 'none';
+            document.getElementById('lightbox-next').style.display = hasNext ? 'flex' : 'none';
+            lightbox.classList.add('open');
+        }
+
+        function closeLightbox() { lightbox.classList.remove('open'); }
+
+        galleryItems.forEach((item, i) => {
+            item.addEventListener('click', () => openLightbox(i));
         });
 
-        lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+        document.getElementById('lightbox-prev').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentIndex > 0) openLightbox(currentIndex - 1);
+        });
+
+        document.getElementById('lightbox-next').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentIndex < galleryItems.length - 1) openLightbox(currentIndex + 1);
+        });
+
+        lightbox.addEventListener('click', closeLightbox);
         document.getElementById('lightbox-close').addEventListener('click', (e) => {
             e.stopPropagation();
-            lightbox.classList.remove('open');
+            closeLightbox();
         });
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') lightbox.classList.remove('open');
+            if (!lightbox.classList.contains('open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft' && currentIndex > 0) openLightbox(currentIndex - 1);
+            if (e.key === 'ArrowRight' && currentIndex < galleryItems.length - 1) openLightbox(currentIndex + 1);
         });
     </script>
 </body>
