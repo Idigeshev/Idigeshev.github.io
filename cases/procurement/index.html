@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аналитика закупок и система уведомлений — Вячеслав</title>
+    <meta name="description"
+        content="Автоматизация аналитики закупок: отслеживание цен сырья, рекомендуемые отпускные цены и Telegram-уведомления об отклонениях">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0e1117;
+            --bg-card: #161b22;
+            --border: #21262d;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --text-bright: #f0f6fc;
+            --accent: #58a6ff;
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: radial-gradient(560px circle at var(--mouse-x) var(--mouse-y),
+                    rgba(88, 166, 255, 0.10),
+                    transparent 70%);
+        }
+
+        .page {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 64px 40px 120px;
+        }
+
+        /* ── Back ── */
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            margin-bottom: 56px;
+            transition: color 0.2s;
+        }
+
+        .back:hover {
+            color: var(--text-bright);
+        }
+
+        .back svg {
+            transition: transform 0.2s;
+        }
+
+        .back:hover svg {
+            transform: translateX(-3px);
+        }
+
+        /* ── Header ── */
+        .case-header {
+            margin-bottom: 56px;
+        }
+
+        .case-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            letter-spacing: -0.5px;
+            margin-bottom: 16px;
+        }
+
+        .case-header .lead {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.9;
+            max-width: 640px;
+            margin-bottom: 24px;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: rgba(88, 166, 255, 0.08);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(88, 166, 255, 0.18);
+        }
+
+        /* ── Links ── */
+        .case-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .case-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .case-link.primary {
+            background: var(--accent);
+            color: #0e1117;
+        }
+
+        .case-link.primary:hover {
+            background: #79b8ff;
+        }
+
+        .case-link.secondary {
+            background: var(--bg-card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .case-link.secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-bright);
+        }
+
+        /* ── Section ── */
+        .section {
+            margin-bottom: 64px;
+        }
+
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        /* ── Tasks list ── */
+        .tasks-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 28px 32px;
+        }
+
+        .tasks-list li {
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.7;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .tasks-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.6;
+        }
+
+        /* ── Before / After ── */
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .ba-col {
+            background: var(--bg-card);
+            padding: 28px 28px 32px;
+        }
+
+        .ba-col:first-child {
+            border-right: 2px solid var(--bg);
+        }
+
+        .ba-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ba-label.before {
+            color: #f0883e;
+        }
+
+        .ba-label.after {
+            color: #3fb950;
+        }
+
+        .ba-label .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .before .dot {
+            background: #f0883e;
+        }
+
+        .after .dot {
+            background: #3fb950;
+        }
+
+        .ba-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ba-list li {
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.6;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .ba-list li::before {
+            content: '–';
+            position: absolute;
+            left: 0;
+            color: var(--text-muted);
+        }
+
+        /* ── Architecture ── */
+        .arch-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 32px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .arch-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .arch-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .arch-block {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 16px;
+            color: var(--text-bright);
+            font-size: 0.82rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .arch-block.source {
+            border-color: #f0883e44;
+            color: #f0883e;
+        }
+
+        .arch-block.process {
+            border-color: rgba(88, 166, 255, 0.3);
+            color: var(--accent);
+        }
+
+        .arch-block.storage {
+            border-color: #3fb95044;
+            color: #3fb950;
+        }
+
+        .arch-block.viz {
+            border-color: #d2a8ff44;
+            color: #d2a8ff;
+        }
+
+        .arch-block.notify {
+            border-color: #40a3ff44;
+            color: #40a3ff;
+        }
+
+        .arch-connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 0;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            letter-spacing: 0.04em;
+        }
+
+        .arch-connector .arrow {
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .arch-fork {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .arch-fork-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .arch-comment {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── Gallery ── */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .gallery-item {
+            cursor: zoom-in;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--accent);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .gallery-placeholder svg {
+            opacity: 0.4;
+        }
+
+        /* ── Lightbox ── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 12, 18, 0.92);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            backdrop-filter: blur(4px);
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 88vh;
+            border-radius: 8px;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .lightbox-close {
+            position: fixed;
+            top: 24px;
+            right: 32px;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .lightbox-close:hover {
+            color: var(--text-bright);
+        }
+
+        .lightbox-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-muted);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            z-index: 10001;
+            user-select: none;
+        }
+
+        .lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-bright);
+        }
+
+        .lightbox-prev {
+            left: 20px;
+        }
+
+        .lightbox-next {
+            right: 20px;
+        }
+
+        .lightbox-counter {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            background: rgba(10, 12, 18, 0.7);
+            padding: 4px 14px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .page {
+                padding: 40px 24px 80px;
+            }
+
+            .case-header h1 {
+                font-size: 1.7rem;
+            }
+
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+
+            .ba-col:first-child {
+                border-right: none;
+                border-bottom: 2px solid var(--bg);
+            }
+
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .arch-fork {
+                flex-direction: column;
+                align-items: center;
+                gap: 0;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::selection {
+            background: rgba(88, 166, 255, 0.15);
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+
+        <a href="../../" class="back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Вячеслав — Аналитика данных
+        </a>
+
+        <!-- Заголовок -->
+        <header class="case-header">
+            <h1>Аналитика закупок и система уведомлений</h1>
+            <p class="lead">
+                Автоматизировали мониторинг закупочных цен по 15 филиалам: дашборды в Power BI,
+                рекомендуемые отпускные цены и Telegram-уведомления об отклонениях от средней цены.
+            </p>
+
+            <div class="tag-list">
+                <span class="tag">Power BI</span>
+                <span class="tag">Python</span>
+                <span class="tag">MSSQL</span>
+                <span class="tag">ETL</span>
+                <span class="tag">Telegram Bot</span>
+            </div>
+
+            <div class="case-links">
+                <a href="https://app.powerbi.com/view?r=eyJrIjoiOWM2ZDdjMDgtMjBkNC00MDEwLWFkNTItMGRhM2E5MjEzZjlhIiwidCI6IjFkYzY5NmRiLWM3NGEtNGU0NC1hMDc3LTcxOWUzNzk5ZjYyMyIsImMiOjEwfQ%3D%3D"
+                    class="case-link primary" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                    Открыть демо
+                </a>
+            </div>
+        </header>
+
+        <!-- Задачи -->
+        <div class="section">
+            <div class="section-label">Задачи</div>
+            <ul class="tasks-list">
+                <li>Отслеживать в динамике изменение стоимости сырья</li>
+                <li>Видеть причины изменений: смена поставщика или рост цен у текущего поставщика</li>
+                <li>Рассчитывать новые рекомендуемые отпускные цены при изменении стоимости сырья</li>
+                <li>Уведомлять в Telegram, если новая закупка отличается от средней цены за 3 месяца более чем на 10%
+                </li>
+            </ul>
+        </div>
+
+        <!-- Было / Стало -->
+        <div class="section">
+            <div class="section-label">Было → Стало</div>
+            <div class="before-after">
+                <div class="ba-col">
+                    <div class="ba-label before"><span class="dot"></span>Было</div>
+                    <ul class="ba-list">
+                        <li>Ручные выгрузки из 3 инстанций IIKO по 15 филиалам</li>
+                        <li>Поиск нужных позиций в сотнях приходных номенклатур вручную</li>
+                        <li>Невозможно оперативно реагировать на отклонение цен</li>
+                        <li>Рекомендуемые цены считались редко и с задержкой</li>
+                    </ul>
+                </div>
+                <div class="ba-col">
+                    <div class="ba-label after"><span class="dot"></span>Стало</div>
+                    <ul class="ba-list">
+                        <li>Python автоматически собирает данные из 3 IIKO и формирует БД</li>
+                        <li>3 дашборда читают данные из MSSQL в автоматическом режиме</li>
+                        <li>Telegram-уведомления об отклонениях каждые 30 минут</li>
+                        <li>Рекомендуемые отпускные цены пересчитываются актуально</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Архитектура -->
+        <div class="section">
+            <div class="section-label">Архитектура решения</div>
+            <div class="arch-diagram">
+                <div class="arch-step">
+
+                    <!-- Источники -->
+                    <div class="arch-row">
+                        <div class="arch-block source">IIKO 1</div>
+                        <div class="arch-block source">IIKO 2</div>
+                        <div class="arch-block source">IIKO 3</div>
+                    </div>
+
+                    <div class="arch-connector">
+                        <span class="arrow">↓</span>
+                        <span>REST API</span>
+                    </div>
+
+                    <!-- ETL -->
+                    <div class="arch-row">
+                        <div class="arch-block process">Python ETL-скрипт</div>
+                    </div>
+
+                    <div class="arch-connector">
+                        <span class="arrow">↓</span>
+                        <span>трансформация и запись</span>
+                    </div>
+
+                    <!-- Хранилище -->
+                    <div class="arch-row">
+                        <div class="arch-block storage">MSSQL</div>
+                    </div>
+
+                    <div class="arch-connector">
+                        <span class="arrow">↓</span>
+                        <span>каждые 30 минут</span>
+                    </div>
+
+                    <!-- Развилка: Power BI + Telegram -->
+                    <div class="arch-fork">
+                        <div class="arch-fork-branch">
+                            <div class="arch-connector" style="padding-top:0">
+                                <span class="arrow">↓</span>
+                                <span>Import</span>
+                            </div>
+                            <div class="arch-block viz">Power BI</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;text-align:center">3
+                                дашборда</div>
+                        </div>
+                        <div class="arch-fork-branch">
+                            <div class="arch-connector" style="padding-top:0">
+                                <span class="arrow">↓</span>
+                                <span>отклонение &gt;10%</span>
+                            </div>
+                            <div class="arch-block notify">Telegram Bot</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;text-align:center">
+                                уведомления</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="arch-comment">
+                    Скрипт запускается каждые 30 минут через Task Scheduler. При каждом запуске проверяет новые приходы:
+                    если цена отклоняется от средней за 3 месяца более чем на 10% — бот отправляет уведомление в
+                    Telegram.
+                </div>
+            </div>
+        </div>
+
+        <!-- Галерея -->
+        <div class="section">
+            <div class="section-label">Скриншоты</div>
+            <div class="gallery" id="gallery">
+
+                <div class="gallery-item" data-src="images/screen-1.png">
+                    <div class="gallery-placeholder">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span>Скриншоты появятся позже</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" id="lightbox-close">✕</span>
+        <span class="lightbox-nav lightbox-prev" id="lightbox-prev">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+        </span>
+        <span class="lightbox-nav lightbox-next" id="lightbox-next">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </span>
+        <img id="lightbox-img" src="" alt="">
+        <span class="lightbox-counter" id="lightbox-counter"></span>
+    </div>
+
+    <script>
+        // Spotlight
+        document.addEventListener('mousemove', (e) => {
+            document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+            document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+        });
+
+        // Lightbox
+        const lightbox = document.getElementById('lightbox');
+        const lbImg = document.getElementById('lightbox-img');
+        const lbCounter = document.getElementById('lightbox-counter');
+
+        const galleryItems = [...document.querySelectorAll('.gallery-item[data-src]')]
+            .filter(item => item.querySelector('img'));
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            const img = galleryItems[currentIndex].querySelector('img');
+            lbImg.src = img.src;
+            lbCounter.textContent = `${currentIndex + 1} / ${galleryItems.length}`;
+            const hasPrev = currentIndex > 0;
+            const hasNext = currentIndex < galleryItems.length - 1;
+            document.getElementById('lightbox-prev').style.display = hasPrev ? 'flex' : 'none';
+            document.getElementById('lightbox-next').style.display = hasNext ? 'flex' : 'none';
+            lightbox.classList.add('open');
+        }
+
+        function closeLightbox() { lightbox.classList.remove('open'); }
+
+        galleryItems.forEach((item, i) => {
+            item.addEventListener('click', () => openLightbox(i));
+        });
+
+        document.getElementById('lightbox-prev').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentIndex > 0) openLightbox(currentIndex - 1);
+        });
+        document.getElementById('lightbox-next').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentIndex < galleryItems.length - 1) openLightbox(currentIndex + 1);
+        });
+
+        lightbox.addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-close').addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeLightbox();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft' && currentIndex > 0) openLightbox(currentIndex - 1);
+            if (e.key === 'ArrowRight' && currentIndex < galleryItems.length - 1) openLightbox(currentIndex + 1);
+        });
+    </script>
+</body>
+
+</html>

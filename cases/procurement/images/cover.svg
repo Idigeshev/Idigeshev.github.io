@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="144" viewBox="0 0 240 144">
+  <rect width="240" height="144" fill="#161b22"/>
+  <!-- bar chart -->
+  <rect x="20" y="80" width="18" height="40" rx="2" fill="#f0883e33"/>
+  <rect x="44" y="60" width="18" height="60" rx="2" fill="#f0883e55"/>
+  <rect x="68" y="50" width="18" height="70" rx="2" fill="#f0883e77"/>
+  <rect x="92" y="40" width="18" height="80" rx="2" fill="#f0883e99"/>
+  <rect x="116" y="55" width="18" height="65" rx="2" fill="#f0883e77"/>
+  <rect x="140" y="70" width="18" height="50" rx="2" fill="#f0883e55"/>
+  <!-- trend line -->
+  <polyline points="29,78 53,58 77,48 101,38 125,53 149,68" fill="none" stroke="#3fb950" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- telegram icon hint -->
+  <circle cx="196" cy="72" r="22" fill="#40a3ff15" stroke="#40a3ff33" stroke-width="1"/>
+  <path d="M186 71 L197 66 L206 72 L197 77 Z" fill="none" stroke="#40a3ff" stroke-width="1.5" stroke-linejoin="round"/>
+  <line x1="197" y1="66" x2="197" y2="77" stroke="#40a3ff" stroke-width="1.2"/>
+  <!-- label -->
+  <rect x="20" y="20" width="80" height="7" rx="2" fill="#21262d"/>
+  <rect x="20" y="32" width="50" height="5" rx="2" fill="#21262d"/>
+</svg>

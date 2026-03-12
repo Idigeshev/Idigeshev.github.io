@@ -11,5 +11,19 @@
         ],
         "cover": "cases/plan-fact/images/Screenshot_22.png",
         "url": "cases/plan-fact/"
+    },
+    {
+        "id": "procurement",
+        "title": "Аналитика закупок и система уведомлений",
+        "short": "Мониторинг закупочных цен по 15 филиалам, рекомендуемые отпускные цены и Telegram-уведомления об отклонениях от средней цены за 3 месяца",
+        "tags": [
+            "Power BI",
+            "Python",
+            "MSSQL",
+            "ETL",
+            "Telegram Bot"
+        ],
+        "cover": "cases/procurement/images/cover.svg",
+        "url": "cases/procurement/"
     }
 ]
