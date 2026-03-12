@@ -26,6 +26,8 @@
             --text-bright: #f0f6fc;
             --accent: #58a6ff;
             --accent-muted: rgba(88, 166, 255, 0.1);
+            --mouse-x: 50%;
+            --mouse-y: 50%;
         }
 
         body {
@@ -34,6 +36,18 @@
             color: var(--text);
             line-height: 1.7;
             font-size: 16px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: radial-gradient(700px circle at var(--mouse-x) var(--mouse-y),
+                    rgba(88, 166, 255, 0.10),
+                    transparent 70%);
+            transition: background 0.1s ease;
         }
 
         /* ── Layout ── */
@@ -678,6 +692,12 @@
     </div>
 
     <script>
+        // Spotlight effect
+        document.addEventListener('mousemove', (e) => {
+            document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+            document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+        });
+
         // Highlight active nav link on scroll
         const sections = document.querySelectorAll('.section');
         const navLinks = document.querySelectorAll('nav a');
