@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дашборд план-факт — Вячеслав</title>
     <meta name="description"
-        content="Автоматизация сбора данных из 3 источников и ежедневный план-фактный анализ в Power BI">
+        content="Автоматизация сбора данных из 4 источников и ежедневный план-фактный анализ в Power BI">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -258,8 +258,9 @@
         .arch-row {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
-            margin-bottom: 8px;
+            margin-bottom: 0;
             flex-wrap: wrap;
         }
 
@@ -302,6 +303,29 @@
             color: var(--text-muted);
             font-size: 1rem;
             flex-shrink: 0;
+        }
+
+        .arch-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        .arch-connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 0;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            letter-spacing: 0.04em;
+        }
+
+        .arch-connector .arrow {
+            font-size: 1.2rem;
+            line-height: 1;
         }
 
         .arch-comment {
@@ -454,8 +478,8 @@
         <header class="case-header">
             <h1>Дашборд план-факт</h1>
             <p class="lead">
-                Заменили ручную еженедельную сборку данных из трёх источников на автоматический
-                Python-скрипт и ежедневный обновляемый дашборд в Power BI.
+                Заменили ручную еженедельную сборку данных из четырёх источников (3 инстанции IIKO + Google Sheets)
+                на автоматический Python-скрипт и ежедневно обновляемый дашборд в Power BI.
             </p>
 
             <div class="tag-list">
@@ -489,7 +513,7 @@
                 <div class="ba-col">
                     <div class="ba-label before"><span class="dot"></span>Было</div>
                     <ul class="ba-list">
-                        <li>Данные собирались вручную из 3 источников раз в неделю</li>
+                        <li>Данные собирались вручную из 4 источников (3×IIKO + Google Sheets) раз в неделю</li>
                         <li>На сбор уходило несколько часов</li>
                         <li>Отчёт обновлялся еженедельно</li>
                         <li>Высокий риск ошибок при ручном переносе данных</li>
@@ -511,28 +535,46 @@
         <div class="section">
             <div class="section-label">Архитектура решения</div>
             <div class="arch-diagram">
+                <div class="arch-step">
 
-                <div class="arch-row">
-                    <div class="arch-block source">Источник 1</div>
-                    <div class="arch-block source">Источник 2</div>
-                    <div class="arch-block source">Источник 3</div>
-                </div>
-                <div class="arch-row">
-                    <div class="arch-arrow">↓</div>
-                    <span style="font-size:0.78rem; color:var(--text-muted)">REST API / Excel / CSV</span>
-                </div>
-                <div class="arch-row">
-                    <div class="arch-block process">Python ETL-скрипт</div>
-                    <div class="arch-arrow">→</div>
-                    <span style="font-size:0.78rem; color:var(--text-muted)">трансформация «на лету»</span>
-                </div>
-                <div class="arch-row">
-                    <div class="arch-arrow">↓</div>
-                </div>
-                <div class="arch-row">
-                    <div class="arch-block storage">MSSQL</div>
-                    <div class="arch-arrow">→</div>
-                    <div class="arch-block viz">Power BI</div>
+                    <!-- Источники -->
+                    <div class="arch-row">
+                        <div class="arch-block source">IIKO 1</div>
+                        <div class="arch-block source">IIKO 2</div>
+                        <div class="arch-block source">IIKO 3</div>
+                        <div class="arch-block source">Google Sheets</div>
+                    </div>
+
+                    <div class="arch-connector">
+                        <span class="arrow">↓</span>
+                        <span>REST API / webhooks</span>
+                    </div>
+
+                    <!-- ETL -->
+                    <div class="arch-row">
+                        <div class="arch-block process">Python ETL-скрипт</div>
+                    </div>
+
+                    <div class="arch-connector">
+                        <span class="arrow">↓</span>
+                        <span>трансформация и запись</span>
+                    </div>
+
+                    <!-- Хранилище -->
+                    <div class="arch-row">
+                        <div class="arch-block storage">MSSQL</div>
+                    </div>
+
+                    <div class="arch-connector">
+                        <span class="arrow">↓</span>
+                        <span>DirectQuery</span>
+                    </div>
+
+                    <!-- Визуализация -->
+                    <div class="arch-row">
+                        <div class="arch-block viz">Power BI</div>
+                    </div>
+
                 </div>
 
                 <div class="arch-comment">
