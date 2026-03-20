@@ -25,5 +25,19 @@
         ],
         "cover": "cases/procurement/images/Screenshot_25.png",
         "url": "cases/procurement/"
+    },
+    {
+        "id": "amocrm",
+        "title": "Дашборды AmoCRM: продажи, воронки, клиенты",
+        "short": "Построили аналитику продаж с нуля — автоматический сбор из AmoCRM, ClickHouse и дашборды в Datalens для сравнения воронок и менеджеров.",
+        "tags": [
+            "Datalens",
+            "Python",
+            "ClickHouse",
+            "ETL",
+            "AmoCRM"
+        ],
+        "cover": "cases/amocrm/images/Screenshot_1.png",
+        "url": "cases/amocrm/"
     }
 ]
