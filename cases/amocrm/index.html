@@ -117,6 +117,35 @@
             border: 1px solid rgba(88, 166, 255, 0.18);
         }
 
+        /* ── Links ── */
+        .case-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .case-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .case-link.primary {
+            background: var(--accent);
+            color: #0e1117;
+        }
+
+        .case-link.primary:hover {
+            background: #79b8ff;
+        }
+
         /* ── Section ── */
         .section {
             margin-bottom: 64px;
@@ -537,6 +566,17 @@
                 <span class="tag">ETL</span>
                 <span class="tag">AmoCRM</span>
             </div>
+
+            <div class="case-links">
+                <a href="https://datalens.yandex/ym20dk2a99sci" class="case-link primary" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                    Открыть демо
+                </a>
+            </div>
         </header>
 
         <!-- Задачи -->
@@ -632,16 +672,16 @@
             <div class="section-label">Скриншоты</div>
             <div class="gallery" id="gallery">
 
-                <div class="gallery-item" data-src="images/Screenshot_1.png">
-                    <img src="images/Screenshot_1.png" alt="Дашборд продаж AmoCRM">
+                <div class="gallery-item" data-src="images/Screenshot_29.png">
+                    <img src="images/Screenshot_29.png" alt="Дашборд продаж AmoCRM">
                 </div>
 
-                <div class="gallery-item" data-src="images/Screenshot_2.png">
-                    <img src="images/Screenshot_2.png" alt="Воронки продаж AmoCRM">
+                <div class="gallery-item" data-src="images/Screenshot_30.png">
+                    <img src="images/Screenshot_30.png" alt="Воронки продаж AmoCRM">
                 </div>
 
-                <div class="gallery-item" data-src="images/Screenshot_3.png">
-                    <img src="images/Screenshot_3.png" alt="Аналитика клиентов AmoCRM">
+                <div class="gallery-item" data-src="images/Screenshot_31.png">
+                    <img src="images/Screenshot_31.png" alt="Аналитика клиентов AmoCRM">
                 </div>
 
             </div>
