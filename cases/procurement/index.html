@@ -97,8 +97,27 @@
             font-size: 1rem;
             color: var(--text-muted);
             line-height: 1.9;
-            max-width: 640px;
             margin-bottom: 24px;
+        }
+
+        .header-body {
+            display: flex;
+            align-items: center;
+            gap: 48px;
+        }
+
+        .header-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-right {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            border-left: 1px solid var(--border);
+            padding-left: 48px;
         }
 
         .tag-list {
@@ -634,30 +653,47 @@
         <!-- Заголовок -->
         <header class="case-header">
             <h1>Аналитика закупок и система уведомлений</h1>
-            <p class="lead">
-                Автоматизировали мониторинг закупочных цен по 15 филиалам — автоматический сбор данных из 3 инстанций
-                IIKO, хранение в MSSQL, визуализация в Power BI и Telegram-бот с оповещениями при отклонении цен более
-                чем на 10%.
-            </p>
+            <div class="header-body">
+                <div class="header-left">
+                    <p class="lead">
+                        Автоматизировали мониторинг закупочных цен по 15 филиалам — автоматический сбор данных из 3
+                        инстанций
+                        IIKO, хранение в MSSQL, визуализация в Power BI и Telegram-бот с оповещениями при отклонении цен
+                        более
+                        чем на 10%.
+                    </p>
 
-            <div class="tag-list">
-                <span class="tag">Power BI</span>
-                <span class="tag">Python</span>
-                <span class="tag">MSSQL</span>
-                <span class="tag">ETL</span>
-                <span class="tag">Telegram Bot</span>
-            </div>
+                    <div class="tag-list">
+                        <span class="tag">Power BI</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">MSSQL</span>
+                        <span class="tag">ETL</span>
+                        <span class="tag">Telegram Bot</span>
+                    </div>
 
-            <div class="case-links">
-                <a href="https://app.powerbi.com/view?r=eyJrIjoiOWM2ZDdjMDgtMjBkNC00MDEwLWFkNTItMGRhM2E5MjEzZjlhIiwidCI6IjFkYzY5NmRiLWM3NGEtNGU0NC1hMDc3LTcxOWUzNzk5ZjYyMyIsImMiOjEwfQ%3D%3D"
-                    class="case-link primary" target="_blank">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                        <polyline points="15 3 21 3 21 9" />
-                        <line x1="10" y1="14" x2="21" y2="3" />
-                    </svg>
-                    Открыть демо
-                </a>
+                    <div class="case-links">
+                        <a href="https://app.powerbi.com/view?r=eyJrIjoiOWM2ZDdjMDgtMjBkNC00MDEwLWFkNTItMGRhM2E5MjEzZjlhIiwidCI6IjFkYzY5NmRiLWM3NGEtNGU0NC1hMDc3LTcxOWUzNzk5ZjYyMyIsImMiOjEwfQ%3D%3D"
+                            class="case-link primary" target="_blank">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                <polyline points="15 3 21 3 21 9" />
+                                <line x1="10" y1="14" x2="21" y2="3" />
+                            </svg>
+                            Открыть демо
+                        </a>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <a href="https://t.me/idigeshev" class="contact-link" target="_blank">
+                        <span class="contact-link-type">Telegram</span>
+                        <span class="contact-link-value">@idigeshev</span>
+                    </a>
+                    <a href="tel:+79538816651" class="contact-link">
+                        <span class="contact-link-type">Телефон</span>
+                        <span class="contact-link-value">+7 953 881 66 51</span>
+                    </a>
+                </div>
             </div>
         </header>
 
@@ -791,23 +827,6 @@
 
             </div>
         </div>
-
-    </div>
-
-    <!-- Связаться -->
-    <div class="section">
-        <div class="section-label">Связаться</div>
-        <div class="contact-links">
-            <a href="https://t.me/idigeshev" class="contact-link" target="_blank">
-                <span class="contact-link-type">Telegram</span>
-                <span class="contact-link-value">@idigeshev</span>
-            </a>
-            <a href="tel:+79538816651" class="contact-link">
-                <span class="contact-link-type">Телефон</span>
-                <span class="contact-link-value">+7 953 881 66 51</span>
-            </a>
-        </div>
-    </div>
 
     </div>
 
