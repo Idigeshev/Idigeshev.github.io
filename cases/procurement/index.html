@@ -533,6 +533,39 @@
             }
         }
 
+        /* ── Contact ── */
+        .contact-links {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 16px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .contact-link-type {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            min-width: 72px;
+        }
+
+        .contact-link-value {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .contact-link:hover .contact-link-value {
+            text-decoration: underline;
+        }
+
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -758,6 +791,23 @@
 
             </div>
         </div>
+
+    </div>
+
+    <!-- Связаться -->
+    <div class="section">
+        <div class="section-label">Связаться</div>
+        <div class="contact-links">
+            <a href="https://t.me/idigeshev" class="contact-link" target="_blank">
+                <span class="contact-link-type">Telegram</span>
+                <span class="contact-link-value">@idigeshev</span>
+            </a>
+            <a href="tel:+79538816651" class="contact-link">
+                <span class="contact-link-type">Телефон</span>
+                <span class="contact-link-value">+7 953 881 66 51</span>
+            </a>
+        </div>
+    </div>
 
     </div>
 
