@@ -388,6 +388,105 @@
             text-decoration: underline;
         }
 
+        /* ── Contact Form ── */
+        .contact-form {
+            margin-top: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 480px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .form-input,
+        .form-textarea {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-bright);
+            font-family: inherit;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding: 10px 14px;
+            transition: border-color 0.2s;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-btn {
+            align-self: flex-start;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: #0e1117;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 11px 28px;
+            transition: background 0.2s, opacity 0.2s;
+        }
+
+        .form-btn:hover {
+            background: #79b8ff;
+        }
+
+        .form-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .form-status {
+            font-size: 0.87rem;
+            line-height: 1.6;
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .form-status.success {
+            display: block;
+            background: rgba(63, 185, 80, 0.1);
+            border: 1px solid rgba(63, 185, 80, 0.3);
+            color: #3fb950;
+        }
+
+        .form-status.error {
+            display: block;
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid rgba(248, 81, 73, 0.3);
+            color: #f85149;
+        }
+
         /* ── Footer ── */
         .footer {
             padding: 24px 0 0;
@@ -689,6 +788,27 @@
                         <span class="contact-link-value">+7 953 881 66 51</span>
                     </a>
                 </div>
+
+                <form class="contact-form" id="contactForm" novalidate>
+                    <div class="form-field">
+                        <label class="form-label" for="cf-name">Имя</label>
+                        <input class="form-input" id="cf-name" type="text" name="name" placeholder="Как вас зовут?"
+                            required autocomplete="name">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label" for="cf-phone">Телефон</label>
+                        <input class="form-input" id="cf-phone" type="tel" name="phone" placeholder="+7 (___) ___-__-__"
+                            required autocomplete="tel">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label" for="cf-message">Сообщение <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0">(необязательно)</span></label>
+                        <textarea class="form-textarea" id="cf-message" name="message"
+                            placeholder="Кратко опишите задачу..."></textarea>
+                    </div>
+                    <div class="form-status" id="formStatus"></div>
+                    <button type="submit" class="form-btn" id="formBtn">Отправить заявку</button>
+                </form>
             </section>
 
             <footer class="footer">
@@ -750,6 +870,77 @@
         }, { rootMargin: '-40% 0px -55% 0px' });
 
         sections.forEach(s => observer.observe(s));
+
+        // ── Contact form ──
+        const cfPhone = document.getElementById('cf-phone');
+
+        cfPhone.addEventListener('input', function () {
+            let v = this.value.replace(/\D/g, '');
+            if (v.startsWith('8')) v = '7' + v.slice(1);
+            if (v.length > 0 && !v.startsWith('7')) v = '7' + v;
+            let fmt = '+';
+            if (v.length > 0) fmt += v.slice(0, 1);
+            if (v.length > 1) fmt += ' (' + v.slice(1, 4);
+            if (v.length >= 5) fmt += ') ' + v.slice(4, 7);
+            if (v.length >= 8) fmt += '-' + v.slice(7, 9);
+            if (v.length >= 10) fmt += '-' + v.slice(9, 11);
+            this.value = fmt;
+        });
+
+        cfPhone.addEventListener('focus', function () {
+            if (!this.value) this.value = '+7';
+        });
+
+        document.getElementById('contactForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const status = document.getElementById('formStatus');
+            const btn = document.getElementById('formBtn');
+
+            const name = document.getElementById('cf-name').value.trim();
+            const phone = document.getElementById('cf-phone').value.trim();
+            const message = document.getElementById('cf-message').value.trim();
+
+            status.className = 'form-status';
+
+            if (!name) {
+                status.className = 'form-status error';
+                status.textContent = 'Пожалуйста, введите имя.';
+                return;
+            }
+            if (phone.replace(/\D/g, '').length !== 11) {
+                status.className = 'form-status error';
+                status.textContent = 'Введите полный номер телефона.';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Отправка...';
+
+            try {
+                const resp = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, message })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    status.className = 'form-status success';
+                    status.textContent = 'Заявка отправлена! Свяжусь с вами в ближайшее время.';
+                    this.reset();
+                    if (typeof ym !== 'undefined') ym(107286357, 'reachGoal', 'contact_form_submit');
+                    if (typeof _tmr !== 'undefined') _tmr.push({ type: 'reachGoal', id: 3748953, goal: 'sendform' });
+                } else {
+                    status.className = 'form-status error';
+                    status.textContent = data.message || 'Ошибка. Попробуйте ещё раз.';
+                }
+            } catch {
+                status.className = 'form-status error';
+                status.textContent = 'Не удалось отправить. Напишите напрямую в Telegram.';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Отправить заявку';
+            }
+        });
     </script>
 </body>
 
