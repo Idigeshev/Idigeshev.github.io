@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post('/api/contact', async (req, res) => {
     try {
-        const { name, phone, message } = req.body;
+        const { name, phone, tg, message } = req.body;
 
         if (!name || !phone) {
             return res.status(400).json({ success: false, message: 'Имя и телефон обязательны.' });
@@ -26,6 +26,7 @@ app.post('/api/contact', async (req, res) => {
 
 👤 <b>Имя:</b> ${name}
 📱 <b>Телефон:</b> ${phone}
+✈️ <b>Telegram:</b> ${tg || '—'}
 💬 <b>Сообщение:</b> ${message || '—'}
 
 ⏰ ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })}

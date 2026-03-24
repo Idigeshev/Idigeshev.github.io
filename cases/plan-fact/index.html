@@ -886,6 +886,7 @@
                 <input class="cta-input" id="cta-name" type="text" placeholder="Имя" required autocomplete="name">
                 <input class="cta-input" id="cta-phone" type="tel" placeholder="+7 (___) ___-__-__" required
                     autocomplete="tel">
+                <input class="cta-input" id="cta-tg" type="text" placeholder="Telegram (необяз.)" autocomplete="off">
                 <button type="submit" class="cta-btn" id="ctaBtn">Написать</button>
             </div>
             <div class="cta-status" id="ctaStatus"></div>
@@ -1014,6 +1015,7 @@
             const btn = document.getElementById('ctaBtn');
             const name = document.getElementById('cta-name').value.trim();
             const phone = document.getElementById('cta-phone').value.trim();
+            const tg = document.getElementById('cta-tg').value.trim();
 
             status.className = 'cta-status';
             if (!name) {
@@ -1034,7 +1036,7 @@
                 const resp = await fetch('/api/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, phone, message: 'Кейс: ' + document.title })
+                    body: JSON.stringify({ name, phone, tg, message: 'Кейс: ' + document.title })
                 });
                 const data = await resp.json();
                 if (data.success) {

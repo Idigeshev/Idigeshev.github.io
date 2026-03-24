@@ -801,6 +801,11 @@
                             required autocomplete="tel">
                     </div>
                     <div class="form-field">
+                        <label class="form-label" for="cf-tg">Telegram <span
+                                style="font-weight:400;text-transform:none;letter-spacing:0">(необязательно)</span></label>
+                        <input class="form-input" id="cf-tg" type="text" name="tg" placeholder="@username">
+                    </div>
+                    <div class="form-field">
                         <label class="form-label" for="cf-message">Сообщение <span
                                 style="font-weight:400;text-transform:none;letter-spacing:0">(необязательно)</span></label>
                         <textarea class="form-textarea" id="cf-message" name="message"
@@ -898,6 +903,7 @@
 
             const name = document.getElementById('cf-name').value.trim();
             const phone = document.getElementById('cf-phone').value.trim();
+            const tg = document.getElementById('cf-tg').value.trim();
             const message = document.getElementById('cf-message').value.trim();
 
             status.className = 'form-status';
@@ -920,7 +926,7 @@
                 const resp = await fetch('/api/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, phone, message })
+                    body: JSON.stringify({ name, phone, tg, message })
                 });
                 const data = await resp.json();
                 if (data.success) {
