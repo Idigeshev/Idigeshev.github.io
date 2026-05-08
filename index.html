@@ -813,13 +813,59 @@
             </section>
 
             <footer class="footer">
-                <p>&copy; 2026 Идигешев Вячеслав</p>
+                <p>&copy; 2026 Идигешев Вячеслав &nbsp;&middot;&nbsp; <a href="/privacy/"
+                        style="color:inherit;opacity:0.6;text-decoration:none;" onmouseover="this.style.opacity='1'"
+                        onmouseout="this.style.opacity='0.6'">Политика конфиденциальности</a></p>
             </footer>
 
         </main>
     </div>
 
+    <!-- ── Cookie Banner ── -->
+    <div id="cookieBanner" style="
+        position:fixed;bottom:0;left:0;right:0;z-index:9999;
+        display:flex;align-items:center;gap:1.2rem;
+        padding:1rem 1.5rem;
+        background:rgba(22,27,34,0.97);
+        border-top:1px solid #21262d;
+        backdrop-filter:blur(8px);
+        font-size:0.82rem;color:#8b949e;
+        transition:transform 0.3s ease,opacity 0.3s ease;
+    ">
+        <span style="flex:1;line-height:1.5;">
+            Мы используем файлы&nbsp;cookie и счётчики аналитики
+            (<a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener"
+                style="color:#58a6ff;">Яндекс.Метрика</a>,
+            ВКонтакте) для улучшения работы сайта.
+            Продолжая пользоваться сайтом, вы соглашаетесь на их использование.
+            <a href="/privacy/" style="color:#58a6ff;margin-left:0.4rem;white-space:nowrap;">Подробнее</a>
+        </span>
+        <button id="cookieAccept" style="
+            flex-shrink:0;padding:0.45rem 1.2rem;
+            background:#58a6ff;color:#0e1117;
+            border:none;border-radius:6px;
+            font-size:0.82rem;font-weight:600;
+            cursor:pointer;
+        ">Принять</button>
+    </div>
+
     <script>
+        // Cookie Banner
+        (function () {
+            var banner = document.getElementById('cookieBanner');
+            var btn = document.getElementById('cookieAccept');
+            if (localStorage.getItem('cookie_accepted')) {
+                banner.style.display = 'none';
+                return;
+            }
+            btn.addEventListener('click', function () {
+                localStorage.setItem('cookie_accepted', '1');
+                banner.style.transform = 'translateY(110%)';
+                banner.style.opacity = '0';
+                setTimeout(function () { banner.style.display = 'none'; }, 300);
+            });
+        })();
+
         // Spotlight effect
         document.addEventListener('mousemove', (e) => {
             document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
